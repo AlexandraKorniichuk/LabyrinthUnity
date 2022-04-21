@@ -4,6 +4,13 @@ public class DrawingLabyrinth : MonoBehaviour
 {
     [SerializeField] Converting converting;
 
+    private GameObject Player;
+
+    private void Start()
+    {
+        Player = GameObject.FindGameObjectWithTag("Player");
+    }
+
     public void DrawLabyrinth(char[,] CharField)
     {
         GameObject[,] LabyrinthObejects = converting.GetGameObjectsField(CharField);
@@ -28,8 +35,14 @@ public class DrawingLabyrinth : MonoBehaviour
     private Vector3 GetObjectPostion(GameObject obj, int i, int j) =>
          new Vector3(i, obj.transform.position.y, j);
 
-    public void UpdateLabyrinth()
+    public void UpdateLabyrinth((int, int) NewPlayerPosition, bool HaveGotKey)
     {
+        MovePlayer(NewPlayerPosition);
+    }
 
+    private void MovePlayer((int x, int z) NewPosition)
+    {
+        //Player.transform.Translate(NewPosition.x, Player.transform.position.y, NewPosition.z, Space.World); 
+        Player.transform.position = new Vector3(NewPosition.x, Player.transform.position.y, NewPosition.z);
     }
 }

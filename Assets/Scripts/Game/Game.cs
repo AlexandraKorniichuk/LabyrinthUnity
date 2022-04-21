@@ -1,18 +1,20 @@
 using UnityEngine;
-using System;
+using System.Collections;
 
 public class Game : MonoBehaviour
 {
     private (int i, int j) FieldSize = (15, 15);
+    private char[,] GameField;
     private const int WallChance = 25;
 
     private const int MaxMovesAmount = 40;
     private int MovesAmountLeft = MaxMovesAmount;
 
-    private (int, int) PlayerPosition;
-    private (int, int) KeyPosition;
-    private (int, int)[] ExitPositions;
+    private (int i, int j) PlayerPosition;
+    private (int i, int j) KeyPosition;
+    private (int i, int j)[] ExitPositions;
     private const int ExitsAmount = 3;
+    private (int, int) RightExit;
 
     private bool HaveGotKey = false;
 
@@ -24,26 +26,39 @@ public class Game : MonoBehaviour
         IsWin = false;
 
         CreateSpecialObjectsPositions();
-        char[,] GameField = CreateField();
-        (int, int) RightExit = ChooseRightExit();
+        GameField = CreateField();
+        GameField = GetFieldWithSpcialObjects(GameField);
         DrawField(GameField);
+        
+        RightExit = ChooseRightExit();
 
-        //do
-        //{
-        //    UpdateField();
-        //    WriteMessages(RightExit);
+        StartCoroutine(GameLoop());
+    }
 
-        //    CheckHavingKey();
+    private IEnumerator GameLoop()
+    {
+        (int, int) NewPosition;
+        do
+        {
+            yield return new WaitWhile(() => InputController.GetInputMovementKey() == KeyCode.None);
+            //WriteMessages(RightExit);
 
-        //    (int, int) direction = InputDirection();
-        //    (int, int) NewPosition = Converting.GetNewPostion(PlayerPosition, direction);
+            CheckHavingKey();
 
-        //    if (TryMove(GameField, NewPosition))
-        //        Move(NewPosition);
+            (int, int) direction = InputDirection(InputController.InputKey);
+            InputController.InputKey = KeyCode.None;
 
-        //    MovesAmountLeft--;
-        //    Console.Clear();
-        //} while (!IsEndGame(RightExit));
+            NewPosition = Converting.GetNewPostion(PlayerPosition, direction);
+
+            if (TryMove(GameField, NewPosition))
+            {
+                Move(NewPosition);
+                UpdateField(NewPosition);
+            }
+
+            MovesAmountLeft--;
+            yield return new WaitForEndOfFrame();
+        } while (!IsEndGame(RightExit));
     }
 
     private void CreateSpecialObjectsPositions()
@@ -82,12 +97,23 @@ public class Game : MonoBehaviour
 
     private bool IsCellExit((int, int) currentCell)
     {
-        for (int i = 0; i < ExitsAmount; i++)
+        foreach ((int, int) ExitPosition in ExitPositions)
         {
-            if (currentCell == ExitPositions[i])
+            if (currentCell == ExitPosition)
                 return true;
         }
         return false;
+    }
+
+    private char[,] GetFieldWithSpcialObjects(char [,] Field)
+    {
+        Field[PlayerPosition.i, PlayerPosition.j] = CellSymbol.PlayerSymbol;
+        Field[KeyPosition.i, KeyPosition.j] = CellSymbol.KeySymbol;
+
+        for (int i = 0; i < ExitsAmount; i++)
+            Field[ExitPositions[i].i, ExitPositions[i].j] = CellSymbol.ExitSymbol;
+
+        return Field;
     }
 
     private (int, int) GetRandomPosition() =>
@@ -98,13 +124,10 @@ public class Game : MonoBehaviour
 
     private void DrawField(char[,] Field) => drawingLabyrinth.DrawLabyrinth(Field);
 
-    private void UpdateField() => drawingLabyrinth.UpdateLabyrinth();
+    private void UpdateField((int, int) NewPosition) => drawingLabyrinth.UpdateLabyrinth(NewPosition, HaveGotKey);
 
-    private (int, int) InputDirection()
-    {
-        KeyCode inputKeyMovement = InputController.GetInputMovementKey();
-        return Converting.GetDirection(inputKeyMovement.ToString());
-    }
+    private (int, int) InputDirection(KeyCode inputKeyMovement) =>
+        Converting.GetDirection(inputKeyMovement.ToString());
 
     private bool TryMove(char[,] Field, (int, int) NewPosition)
     {
@@ -125,34 +148,34 @@ public class Game : MonoBehaviour
     private void Move((int, int) NewPosition) =>
         PlayerPosition = NewPosition;
 
-    private void WriteMessages((int, int) RightExit)
-    {
-        WriteMovesMessage();
-        WriteKeyMessage();
-        WriteExitMessage(RightExit);
-        Console.ForegroundColor = ConsoleColor.White;
-    }
+    //private void WriteMessages((int, int) RightExit)
+    //{
+    //    WriteMovesMessage();
+    //    WriteKeyMessage();
+    //    WriteExitMessage(RightExit);
+    //    Console.ForegroundColor = ConsoleColor.White;
+    //}
 
-    private void WriteMovesMessage() =>
-        Console.WriteLine($"Moves left: {MovesAmountLeft}");
+    //private void WriteMovesMessage() =>
+    //    Console.WriteLine($"Moves left: {MovesAmountLeft}");
 
-    private void WriteKeyMessage()
-    {
-        if (HavePlayerReachedKey())
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("You've got a key!");
-        }
-    }
+    //private void WriteKeyMessage()
+    //{
+    //    if (HavePlayerReachedKey())
+    //    {
+    //        Console.ForegroundColor = ConsoleColor.Yellow;
+    //        Console.WriteLine("You've got a key!");
+    //    }
+    //}
 
-    private void WriteExitMessage((int, int) RightExit)
-    {
-        if (IsCellExit(PlayerPosition) || (PlayerPosition == RightExit && !HaveGotKey))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Closed!");
-        }
-    }
+    //private void WriteExitMessage((int, int) RightExit)
+    //{
+    //    if (IsCellExit(PlayerPosition) || (PlayerPosition == RightExit && !HaveGotKey))
+    //    {
+    //        Console.ForegroundColor = ConsoleColor.Red;
+    //        Console.WriteLine("Closed!");
+    //    }
+    //}
 
     private void CheckHavingKey()
     {

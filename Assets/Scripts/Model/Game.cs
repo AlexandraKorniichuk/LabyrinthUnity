@@ -82,9 +82,9 @@ namespace Labyrinth
 
         private bool IsCellExit((int, int) currentCell)
         {
-            for (int i = 0; i < ExitsAmount; i++)
+            foreach ((int, int) ExitPosition in ExitPositions)
             {
-                if (currentCell == ExitPositions[i])
+                if (currentCell == ExitPosition)
                     return true;
             }
             return false;
@@ -145,8 +145,8 @@ namespace Labyrinth
             return true;
         }
 
-        private bool IsNewPositionWall(char[,] Field, (int i, int j) NewPosition) => 
-            Field[NewPosition.i, NewPosition.j] == '#';
+        private bool IsNewPositionWall(char[,] Field, (int i, int j) NewPosition) =>
+            Field[NewPosition.i, NewPosition.j] == CellSymbol.ExitSymbol;
 
         private bool IsNewPositionOutOfField((int i, int j) NewPosition) =>
             NewPosition.i < 0 || NewPosition.j < 0 || NewPosition.i >= FieldSize.i || NewPosition.j >= FieldSize.j;
@@ -165,7 +165,7 @@ namespace Labyrinth
         private void WriteMovesMessage() =>
             Console.WriteLine($"Moves left: {MovesAmountLeft}");
 
-        private void WriteKeyMessage() 
+        private void WriteKeyMessage()
         {
             if (HavePlayerReachedKey())
             {
