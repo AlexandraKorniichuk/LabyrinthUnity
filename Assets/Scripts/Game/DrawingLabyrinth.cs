@@ -5,10 +5,12 @@ public class DrawingLabyrinth : MonoBehaviour
     [SerializeField] Converting converting;
 
     private GameObject Player;
+    private GameObject Key;
 
     private void Start()
     {
         Player = GameObject.FindGameObjectWithTag("Player");
+        Key = GameObject.FindGameObjectWithTag("Key");
     }
 
     public void DrawLabyrinth(char[,] CharField)
@@ -38,6 +40,11 @@ public class DrawingLabyrinth : MonoBehaviour
     public void UpdateLabyrinth((int, int) NewPlayerPosition, bool HaveGotKey)
     {
         MovePlayer(NewPlayerPosition);
+        if (HaveGotKey)
+        {
+            Key.SetActive(false);
+            print("You've got a key");
+        }
     }
 
     private void MovePlayer((int x, int z) NewPosition)

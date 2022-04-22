@@ -7,7 +7,7 @@ public class Game : MonoBehaviour
     private char[,] GameField;
     private const int WallChance = 25;
 
-    private const int MaxMovesAmount = 40;
+    private const int MaxMovesAmount = 55;
     private int MovesAmountLeft = MaxMovesAmount;
 
     private (int i, int j) PlayerPosition;
@@ -15,6 +15,8 @@ public class Game : MonoBehaviour
     private (int i, int j)[] ExitPositions;
     private const int ExitsAmount = 3;
     private (int, int) RightExit;
+
+    private (int, int) NewPosition;
 
     private bool HaveGotKey = false;
 
@@ -29,7 +31,8 @@ public class Game : MonoBehaviour
         GameField = CreateField();
         GameField = GetFieldWithSpcialObjects(GameField);
         DrawField(GameField);
-        
+
+        NewPosition = PlayerPosition;
         RightExit = ChooseRightExit();
 
         StartCoroutine(GameLoop());
@@ -37,28 +40,26 @@ public class Game : MonoBehaviour
 
     private IEnumerator GameLoop()
     {
-        (int, int) NewPosition;
         do
         {
             yield return new WaitWhile(() => InputController.GetInputMovementKey() == KeyCode.None);
             //WriteMessages(RightExit);
 
-            CheckHavingKey();
-
             (int, int) direction = InputDirection(InputController.InputKey);
-            InputController.InputKey = KeyCode.None;
 
             NewPosition = Converting.GetNewPostion(PlayerPosition, direction);
 
             if (TryMove(GameField, NewPosition))
             {
                 Move(NewPosition);
+                CheckHavingKey();
                 UpdateField(NewPosition);
             }
-
+            print(MovesAmountLeft);
             MovesAmountLeft--;
             yield return new WaitForEndOfFrame();
         } while (!IsEndGame(RightExit));
+        print($"Is win: {IsWin}");
     }
 
     private void CreateSpecialObjectsPositions()
