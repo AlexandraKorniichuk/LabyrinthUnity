@@ -68,4 +68,18 @@ public class Converting : MonoBehaviour
             return NewPosition.z >= OldPosition.z;
         return false;
     }
+
+    public int GetAnimationIndex((int x, int y) Direction)
+    {
+        if (Direction.y == 1)
+            return 1;
+        else if (Direction.y == -1)
+            return 2;
+        else if (Direction.x == 1)
+            return 3;
+        if (Direction.x == -1)
+            return 4;
+        else
+            return 0;
+    }
 }

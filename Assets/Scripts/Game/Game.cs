@@ -33,7 +33,7 @@ public class Game : MonoBehaviour
         GameField = GetFieldWithSpecialObjects(GameField);
         DrawField(GameField);
 
-        gameUI.UpdateO2Amount(MovesAmountLeft);
+        gameUI.UpdateMovesAmount(MovesAmountLeft);
 
         NewPosition = PlayerPosition;
         RightExit = ChooseRightExit();
@@ -164,16 +164,12 @@ public class Game : MonoBehaviour
         ShowGottenKey();
     }
 
-    private void UpdateMovesAmountText() => gameUI.UpdateO2Amount(MovesAmountLeft);
+    private void UpdateMovesAmountText() => gameUI.UpdateMovesAmount(MovesAmountLeft);
 
     private void ShowGottenKey()
     {
-        print("hello");
         if (HavePlayerReachedKey())
-        {
-            print("reached");
             gameUI.TurnOnKeyImage();
-        }
     }
 
     private void ShowExitIsWrong((int, int) RightExit)
@@ -185,10 +181,7 @@ public class Game : MonoBehaviour
     private void CheckHavingKey()
     {
         if (HavePlayerReachedKey())
-        {
-            print("now true");
             HaveGotKey = true;
-        }
     }
 
     private bool HavePlayerReachedKey() => PlayerPosition == KeyPosition && !HaveGotKey;

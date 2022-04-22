@@ -4,16 +4,18 @@ using System.Collections;
 public class VisualLabyrinth : MonoBehaviour
 {
     [SerializeField] Converting converting;
-    [SerializeField] float speedMovingPlayer = 10f;
 
     private GameObject Player;
     private GameObject Key;
+    private Animator PlayerAnimation;
 
     public bool IsEndMovePlayer = true;
+    private float speedMovingPlayer = 3f;
 
     private void FindSpecialObjects()
     {
         Player = GameObject.FindGameObjectWithTag("Player");
+        PlayerAnimation = Player.GetComponentInChildren<Animator>();
         Key = GameObject.FindGameObjectWithTag("Key");
     }
 
@@ -52,6 +54,7 @@ public class VisualLabyrinth : MonoBehaviour
 
     private IEnumerator MovePlayer((int x, int z) Direction)
     {
+        SetAnimation(Direction);
         Vector3 VectorDirection = GetVectorDirection(Direction);
         Vector3 NewGameObjectPosition = Player.transform.position + VectorDirection;
 
@@ -61,6 +64,10 @@ public class VisualLabyrinth : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         Player.transform.position = RoundUpPosition();
+
+        Direction = (0, 0);
+        SetAnimation(Direction);
+
         IsEndMovePlayer = true;
     }
 
@@ -72,6 +79,12 @@ public class VisualLabyrinth : MonoBehaviour
         float y = Player.transform.position.y;
         float z = Mathf.Round(Player.transform.position.z);
         return new Vector3 (x, y, z); 
+    }
+
+    private void SetAnimation((int x, int z) Direction)
+    {
+        int index = converting.GetAnimationIndex(Direction);
+        PlayerAnimation.SetInteger("Direction", index);
     }
 
     public void ShowExitIsWrong()
