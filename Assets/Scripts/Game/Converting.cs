@@ -55,4 +55,19 @@ public class Converting : MonoBehaviour
         }
         return GameObjectCell;
     }
+
+    public bool GetCondition(Vector3 Direction, Vector3 NewPosition, Vector3 OldPosition)
+    {
+        print(Direction);
+        print(NewPosition.z >= OldPosition.z);
+        if (Direction.x == 1)
+            return NewPosition.x <= OldPosition.x;
+        else if (Direction.x == -1)
+            return NewPosition.x >= OldPosition.x;
+        else if (Direction.z == 1)
+            return NewPosition.z <= OldPosition.z;
+        else if (Direction.z == -1)
+            return NewPosition.z >= OldPosition.z;
+        return false;
+    }
 }

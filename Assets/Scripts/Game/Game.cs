@@ -22,14 +22,14 @@ public class Game : MonoBehaviour
 
     public static bool IsWin;
 
-    [SerializeField] DrawingLabyrinth drawingLabyrinth;
+    [SerializeField] GameObjectsInLabyrinth labyrinth;
     public void StartNewRound()
     {
         IsWin = false;
 
         CreateSpecialObjectsPositions();
         GameField = CreateField();
-        GameField = GetFieldWithSpcialObjects(GameField);
+        GameField = GetFieldWithSpecialObjects(GameField);
         DrawField(GameField);
 
         NewPosition = PlayerPosition;
@@ -42,6 +42,9 @@ public class Game : MonoBehaviour
     {
         do
         {
+            if (!labyrinth.IsEndMovePlayer)
+                yield return new WaitWhile(() => labyrinth.IsEndMovePlayer);
+
             yield return new WaitWhile(() => InputController.GetInputMovementKey() == KeyCode.None);
             //WriteMessages(RightExit);
 
@@ -53,7 +56,7 @@ public class Game : MonoBehaviour
             {
                 Move(NewPosition);
                 CheckHavingKey();
-                UpdateField(NewPosition);
+                UpdateField(direction);
             }
             print(MovesAmountLeft);
             MovesAmountLeft--;
@@ -106,7 +109,7 @@ public class Game : MonoBehaviour
         return false;
     }
 
-    private char[,] GetFieldWithSpcialObjects(char [,] Field)
+    private char[,] GetFieldWithSpecialObjects(char [,] Field)
     {
         Field[PlayerPosition.i, PlayerPosition.j] = CellSymbol.PlayerSymbol;
         Field[KeyPosition.i, KeyPosition.j] = CellSymbol.KeySymbol;
@@ -123,9 +126,9 @@ public class Game : MonoBehaviour
     private (int, int) ChooseRightExit() =>
         ExitPositions[UnityEngine.Random.Range(0, ExitsAmount)];
 
-    private void DrawField(char[,] Field) => drawingLabyrinth.DrawLabyrinth(Field);
+    private void DrawField(char[,] Field) => labyrinth.DrawLabyrinth(Field);
 
-    private void UpdateField((int, int) NewPosition) => drawingLabyrinth.UpdateLabyrinth(NewPosition, HaveGotKey);
+    private void UpdateField((int, int) Direction) => labyrinth.UpdateLabyrinth(Direction, HaveGotKey);
 
     private (int, int) InputDirection(KeyCode inputKeyMovement) =>
         Converting.GetDirection(inputKeyMovement.ToString());

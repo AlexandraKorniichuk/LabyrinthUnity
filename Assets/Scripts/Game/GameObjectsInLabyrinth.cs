@@ -1,13 +1,17 @@
 using UnityEngine;
+using System.Collections;
 
-public class DrawingLabyrinth : MonoBehaviour
+public class GameObjectsInLabyrinth : MonoBehaviour
 {
     [SerializeField] Converting converting;
+    [SerializeField] float speedMovingPlayer = 10f;
 
     private GameObject Player;
     private GameObject Key;
 
-    private void Start()
+    public bool IsEndMovePlayer = true;
+
+    private void FindSpecialObjects()
     {
         Player = GameObject.FindGameObjectWithTag("Player");
         Key = GameObject.FindGameObjectWithTag("Key");
@@ -17,6 +21,7 @@ public class DrawingLabyrinth : MonoBehaviour
     {
         GameObject[,] LabyrinthObejects = converting.GetGameObjectsField(CharField);
         CraeteObjects(LabyrinthObejects);
+        FindSpecialObjects();
     }
 
     private void CraeteObjects(GameObject[,] labyrinthObejects)
@@ -39,7 +44,9 @@ public class DrawingLabyrinth : MonoBehaviour
 
     public void UpdateLabyrinth((int, int) NewPlayerPosition, bool HaveGotKey)
     {
-        MovePlayer(NewPlayerPosition);
+        print("updatel");
+        StartCoroutine(MovePlayer(NewPlayerPosition));
+        IsEndMovePlayer = false;
         if (HaveGotKey)
         {
             Key.SetActive(false);
@@ -47,9 +54,27 @@ public class DrawingLabyrinth : MonoBehaviour
         }
     }
 
-    private void MovePlayer((int x, int z) NewPosition)
+    private IEnumerator MovePlayer((int x, int z) Direction)
     {
-        //Player.transform.Translate(NewPosition.x, Player.transform.position.y, NewPosition.z, Space.World); 
-        Player.transform.position = new Vector3(NewPosition.x, Player.transform.position.y, NewPosition.z);
+        Vector3 VectorDirection = GetVectorDirection(Direction);
+        Vector3 NewGameObjectPosition = Player.transform.position + VectorDirection;
+
+        while (converting.GetCondition(VectorDirection, Player.transform.position, NewGameObjectPosition))
+        {
+            Player.transform.Translate(VectorDirection * Time.deltaTime * speedMovingPlayer);
+            yield return new WaitForEndOfFrame();
+        }
+        Player.transform.position = RoundUpPosition();
+        IsEndMovePlayer = true;
+    }
+
+    private Vector3 GetVectorDirection((int x, int z) Direction) =>
+        new Vector3(Direction.x, 0f, Direction.z);
+
+    private Vector3 RoundUpPosition() {
+        float x = Mathf.Round(Player.transform.position.x);
+        float y = Player.transform.position.y;
+        float z = Mathf.Round(Player.transform.position.z);
+        return new Vector3 (x, y, z); 
     }
 }
