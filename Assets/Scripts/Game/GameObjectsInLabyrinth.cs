@@ -44,7 +44,6 @@ public class GameObjectsInLabyrinth : MonoBehaviour
 
     public void UpdateLabyrinth((int, int) NewPlayerPosition, bool HaveGotKey)
     {
-        print("updatel");
         StartCoroutine(MovePlayer(NewPlayerPosition));
         IsEndMovePlayer = false;
         if (HaveGotKey)
