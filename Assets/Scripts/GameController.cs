@@ -10,6 +10,5 @@ public class GameController : MonoBehaviour
     {
         if (PlayButton != null)
             PlayButton.onClick.AddListener(game.StartNewRound);
-        
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class GameObjectsInLabyrinth : MonoBehaviour
+public class VisualLabyrinth : MonoBehaviour
 {
     [SerializeField] Converting converting;
     [SerializeField] float speedMovingPlayer = 10f;
@@ -47,10 +47,7 @@ public class GameObjectsInLabyrinth : MonoBehaviour
         StartCoroutine(MovePlayer(NewPlayerPosition));
         IsEndMovePlayer = false;
         if (HaveGotKey)
-        {
             Key.SetActive(false);
-            print("You've got a key");
-        }
     }
 
     private IEnumerator MovePlayer((int x, int z) Direction)
@@ -75,5 +72,10 @@ public class GameObjectsInLabyrinth : MonoBehaviour
         float y = Player.transform.position.y;
         float z = Mathf.Round(Player.transform.position.z);
         return new Vector3 (x, y, z); 
+    }
+
+    public void ShowExitIsWrong()
+    {
+
     }
 }

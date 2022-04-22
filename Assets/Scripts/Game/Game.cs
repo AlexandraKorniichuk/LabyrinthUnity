@@ -22,7 +22,8 @@ public class Game : MonoBehaviour
 
     public static bool IsWin;
 
-    [SerializeField] GameObjectsInLabyrinth labyrinth;
+    [SerializeField] VisualLabyrinth labyrinth;
+    [SerializeField] GameUI gameUI;
     public void StartNewRound()
     {
         IsWin = false;
@@ -31,6 +32,8 @@ public class Game : MonoBehaviour
         GameField = CreateField();
         GameField = GetFieldWithSpecialObjects(GameField);
         DrawField(GameField);
+
+        gameUI.UpdateO2Amount(MovesAmountLeft);
 
         NewPosition = PlayerPosition;
         RightExit = ChooseRightExit();
@@ -46,7 +49,6 @@ public class Game : MonoBehaviour
                 yield return new WaitWhile(() => labyrinth.IsEndMovePlayer);
 
             yield return new WaitWhile(() => InputController.GetInputMovementKey() == KeyCode.None);
-            //WriteMessages(RightExit);
 
             (int, int) direction = InputDirection(InputController.InputKey);
 
@@ -55,10 +57,11 @@ public class Game : MonoBehaviour
             if (TryMove(GameField, NewPosition))
             {
                 Move(NewPosition);
+                UpdateUI(RightExit);
                 CheckHavingKey();
                 UpdateField(direction);
             }
-            print(MovesAmountLeft);
+            
             MovesAmountLeft--;
             yield return new WaitForEndOfFrame();
         } while (!IsEndGame(RightExit));
@@ -81,7 +84,7 @@ public class Game : MonoBehaviour
         {
             for (int j = 0; j < FieldSize.j; j++)
             {
-                int randNumber = UnityEngine.Random.Range(0, 100);
+                int randNumber = Random.Range(0, 100);
                 char cell;
                 if (IsCellSpecialObject((i, j)))
                     cell = CellSymbol.EmptySymbol;
@@ -121,14 +124,18 @@ public class Game : MonoBehaviour
     }
 
     private (int, int) GetRandomPosition() =>
-        (UnityEngine.Random.Range(0, FieldSize.i), UnityEngine.Random.Range(0, FieldSize.j));
+        (Random.Range(0, FieldSize.i), UnityEngine.Random.Range(0, FieldSize.j));
 
     private (int, int) ChooseRightExit() =>
-        ExitPositions[UnityEngine.Random.Range(0, ExitsAmount)];
+        ExitPositions[Random.Range(0, ExitsAmount)];
 
     private void DrawField(char[,] Field) => labyrinth.DrawLabyrinth(Field);
 
-    private void UpdateField((int, int) Direction) => labyrinth.UpdateLabyrinth(Direction, HaveGotKey);
+    private void UpdateField((int, int) Direction) 
+    { 
+        ShowExitIsWrong(RightExit);
+        labyrinth.UpdateLabyrinth(Direction, HaveGotKey);
+    }
 
     private (int, int) InputDirection(KeyCode inputKeyMovement) =>
         Converting.GetDirection(inputKeyMovement.ToString());
@@ -149,48 +156,42 @@ public class Game : MonoBehaviour
     private bool IsNewPositionOutOfField((int i, int j) NewPosition) =>
         NewPosition.i < 0 || NewPosition.j < 0 || NewPosition.i >= FieldSize.i || NewPosition.j >= FieldSize.j;
 
-    private void Move((int, int) NewPosition) =>
-        PlayerPosition = NewPosition;
+    private void Move((int, int) NewPosition) => PlayerPosition = NewPosition;
 
-    //private void WriteMessages((int, int) RightExit)
-    //{
-    //    WriteMovesMessage();
-    //    WriteKeyMessage();
-    //    WriteExitMessage(RightExit);
-    //    Console.ForegroundColor = ConsoleColor.White;
-    //}
+    private void UpdateUI((int, int) RightExit)
+    {
+        UpdateMovesAmountText();
+        ShowGottenKey();
+    }
 
-    //private void WriteMovesMessage() =>
-    //    Console.WriteLine($"Moves left: {MovesAmountLeft}");
+    private void UpdateMovesAmountText() => gameUI.UpdateO2Amount(MovesAmountLeft);
 
-    //private void WriteKeyMessage()
-    //{
-    //    if (HavePlayerReachedKey())
-    //    {
-    //        Console.ForegroundColor = ConsoleColor.Yellow;
-    //        Console.WriteLine("You've got a key!");
-    //    }
-    //}
+    private void ShowGottenKey()
+    {
+        print("hello");
+        if (HavePlayerReachedKey())
+        {
+            print("reached");
+            gameUI.TurnOnKeyImage();
+        }
+    }
 
-    //private void WriteExitMessage((int, int) RightExit)
-    //{
-    //    if (IsCellExit(PlayerPosition) || (PlayerPosition == RightExit && !HaveGotKey))
-    //    {
-    //        Console.ForegroundColor = ConsoleColor.Red;
-    //        Console.WriteLine("Closed!");
-    //    }
-    //}
+    private void ShowExitIsWrong((int, int) RightExit)
+    {
+        if (IsCellExit(PlayerPosition) || (PlayerPosition == RightExit && !HaveGotKey))
+            labyrinth.ShowExitIsWrong();
+    }
 
     private void CheckHavingKey()
     {
         if (HavePlayerReachedKey())
         {
+            print("now true");
             HaveGotKey = true;
         }
     }
 
-    private bool HavePlayerReachedKey() =>
-        PlayerPosition == KeyPosition && !HaveGotKey;
+    private bool HavePlayerReachedKey() => PlayerPosition == KeyPosition && !HaveGotKey;
 
     private bool IsEndGame((int, int) RightExit)
     {
