@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class GameUI : MonoBehaviour
 {
     [SerializeField] GameObject KeyImage;
-    [SerializeField] Text O2Amount;
+    [SerializeField] Text MovesAmount;
     public void TurnOnKeyImage() => KeyImage.SetActive(true);
-    public void UpdateMovesAmount(int MovesLeftAmount) => O2Amount.text = $"{MovesLeftAmount}";
+    public void UpdateMovesAmount(int MovesLeftAmount) => MovesAmount.text = $"{MovesLeftAmount}";
 }

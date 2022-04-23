@@ -124,7 +124,7 @@ public class Game : MonoBehaviour
     }
 
     private (int, int) GetRandomPosition() =>
-        (Random.Range(0, FieldSize.i), UnityEngine.Random.Range(0, FieldSize.j));
+        (Random.Range(0, FieldSize.i), Random.Range(0, FieldSize.j));
 
     private (int, int) ChooseRightExit() =>
         ExitPositions[Random.Range(0, ExitsAmount)];
@@ -175,7 +175,7 @@ public class Game : MonoBehaviour
     private void ShowExitIsWrong((int, int) RightExit)
     {
         if (IsCellExit(PlayerPosition) || (PlayerPosition == RightExit && !HaveGotKey))
-            labyrinth.ShowExitIsWrong();
+            labyrinth.ShowExitIsWrong(PlayerPosition);
     }
 
     private void CheckHavingKey()

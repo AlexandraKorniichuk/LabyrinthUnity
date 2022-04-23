@@ -7,6 +7,7 @@ public class VisualLabyrinth : MonoBehaviour
 
     private GameObject Player;
     private GameObject Key;
+    private GameObject[] Exits;
     private Animator PlayerAnimation;
 
     public bool IsEndMovePlayer = true;
@@ -17,6 +18,7 @@ public class VisualLabyrinth : MonoBehaviour
         Player = GameObject.FindGameObjectWithTag("Player");
         PlayerAnimation = Player.GetComponentInChildren<Animator>();
         Key = GameObject.FindGameObjectWithTag("Key");
+        Exits = GameObject.FindGameObjectsWithTag("Exit");
     }
 
     public void DrawLabyrinth(char[,] CharField)
@@ -55,7 +57,7 @@ public class VisualLabyrinth : MonoBehaviour
     private IEnumerator MovePlayer((int x, int z) Direction)
     {
         SetAnimation(Direction);
-        Vector3 VectorDirection = GetVectorDirection(Direction);
+        Vector3 VectorDirection = GetVectorFromTurple(Direction);
         Vector3 NewGameObjectPosition = Player.transform.position + VectorDirection;
 
         while (converting.GetCondition(VectorDirection, Player.transform.position, NewGameObjectPosition))
@@ -63,7 +65,7 @@ public class VisualLabyrinth : MonoBehaviour
             Player.transform.Translate(VectorDirection * Time.deltaTime * speedMovingPlayer);
             yield return new WaitForEndOfFrame();
         }
-        Player.transform.position = RoundUpPosition();
+        Player.transform.position = RoundUpPosition(Player.transform.position, IsRoundY: false);
 
         Direction = (0, 0);
         SetAnimation(Direction);
@@ -71,13 +73,16 @@ public class VisualLabyrinth : MonoBehaviour
         IsEndMovePlayer = true;
     }
 
-    private Vector3 GetVectorDirection((int x, int z) Direction) =>
-        new Vector3(Direction.x, 0f, Direction.z);
+    private Vector3 GetVectorFromTurple((int x, int z) Turple) =>
+        new Vector3(Turple.x, 0f, Turple.z);
 
-    private Vector3 RoundUpPosition() {
-        float x = Mathf.Round(Player.transform.position.x);
-        float y = Player.transform.position.y;
-        float z = Mathf.Round(Player.transform.position.z);
+    private Vector3 RoundUpPosition(Vector3 Position, bool IsRoundY = true) {
+        float x = Mathf.Round(Position.x);
+        float y;
+        if (IsRoundY) y = Mathf.Round(Position.y);
+        else y = Position.y;
+
+        float z = Mathf.Round(Position.z);
         return new Vector3 (x, y, z); 
     }
 
@@ -87,8 +92,13 @@ public class VisualLabyrinth : MonoBehaviour
         PlayerAnimation.SetInteger("Direction", index);
     }
 
-    public void ShowExitIsWrong()
+    public void ShowExitIsWrong((int, int) ExitPosition)
     {
-
+        Vector3 VectorExitPosition = GetVectorFromTurple(ExitPosition);
+        foreach (GameObject Exit in Exits)
+        {
+            if (VectorExitPosition == RoundUpPosition(Exit.transform.position))
+                Exit.GetComponent<WrongExit>().ShowExitIsWrong();
+        }
     }
 }
