@@ -27,7 +27,7 @@ public class Game : MonoBehaviour
     [SerializeField] GameController gameController; 
     public void StartNewRound()
     {
-        IsWin = false;
+        ResetValues();
 
         CreateSpecialObjectsPositions();
         GameField = CreateField();
@@ -66,7 +66,16 @@ public class Game : MonoBehaviour
             MovesAmountLeft--;
             yield return new WaitForEndOfFrame();
         } while (!IsEndGame(RightExit));
+
         gameController.EndRound();
+        labyrinth.DestroyLabyrinth();
+    }
+
+    private void ResetValues()
+    {
+        IsWin = false;
+        HaveGotKey = false;
+        MovesAmountLeft = MaxMovesAmount;
     }
 
     private void CreateSpecialObjectsPositions()

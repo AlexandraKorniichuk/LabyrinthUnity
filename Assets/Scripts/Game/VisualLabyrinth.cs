@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class VisualLabyrinth : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class VisualLabyrinth : MonoBehaviour
     private GameObject Key;
     private GameObject[] Exits;
     private Animator PlayerAnimation;
+
+    private List<GameObject> LabyrinthObjects = new List<GameObject>();
 
     public bool IsEndMovePlayer = true;
     private float speedMovingPlayer = 3f;
@@ -37,7 +40,8 @@ public class VisualLabyrinth : MonoBehaviour
                 if (labyrinthObejects[i, j] != null)
                 {
                     Vector3 position = GetObjectPostion(labyrinthObejects[i, j], i, j);
-                    Instantiate(labyrinthObejects[i, j], position, Quaternion.identity);
+                    GameObject labyrinthObject = Instantiate(labyrinthObejects[i, j], position, Quaternion.identity);
+                    LabyrinthObjects.Add(labyrinthObject);
                 }
             }
         }
@@ -100,5 +104,11 @@ public class VisualLabyrinth : MonoBehaviour
             if (VectorExitPosition == RoundUpPosition(Exit.transform.position))
                 Exit.GetComponent<WrongExit>().ShowExitIsWrong();
         }
+    }
+
+    public void DestroyLabyrinth()
+    {
+        for (int i = 0; i < LabyrinthObjects.Count; i++)
+            Destroy(LabyrinthObjects[i]);
     }
 }
