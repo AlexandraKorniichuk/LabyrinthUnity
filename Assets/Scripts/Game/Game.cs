@@ -24,6 +24,7 @@ public class Game : MonoBehaviour
 
     [SerializeField] VisualLabyrinth labyrinth;
     [SerializeField] GameUI gameUI;
+    [SerializeField] GameController gameController; 
     public void StartNewRound()
     {
         IsWin = false;
@@ -65,7 +66,7 @@ public class Game : MonoBehaviour
             MovesAmountLeft--;
             yield return new WaitForEndOfFrame();
         } while (!IsEndGame(RightExit));
-        print($"Is win: {IsWin}");
+        gameController.EndRound();
     }
 
     private void CreateSpecialObjectsPositions()
