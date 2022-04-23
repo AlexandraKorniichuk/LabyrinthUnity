@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class InputController : MonoBehaviour 
+public class InputController 
 {
     public static KeyCode InputKey = KeyCode.None;
-    public static KeyCode GetInputMovementKey()
+    public static KeyCode InputMovementKey()
     {
         InputKey = KeyCode.None;
         if (Input.GetKeyDown(KeyCode.W))

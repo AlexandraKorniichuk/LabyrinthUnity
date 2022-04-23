@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Labyrinth;
 
 public class Game : MonoBehaviour
 {
@@ -47,13 +48,13 @@ public class Game : MonoBehaviour
         do
         {
             if (!labyrinth.IsEndMovePlayer)
-                yield return new WaitWhile(() => labyrinth.IsEndMovePlayer);
+                yield return new WaitWhile(() => !labyrinth.IsEndMovePlayer);
 
-            yield return new WaitWhile(() => InputController.GetInputMovementKey() == KeyCode.None);
+            yield return new WaitWhile(() => InputController.InputMovementKey() == KeyCode.None);
 
             (int, int) direction = InputDirection(InputController.InputKey);
 
-            NewPosition = Converting.GetNewPostion(PlayerPosition, direction);
+            NewPosition = Labyrinth.Converting.GetNewPosition(PlayerPosition, direction);
 
             if (TryMove(GameField, NewPosition))
             {
@@ -76,6 +77,7 @@ public class Game : MonoBehaviour
         IsWin = false;
         HaveGotKey = false;
         MovesAmountLeft = MaxMovesAmount;
+        labyrinth.IsEndMovePlayer = true;
     }
 
     private void CreateSpecialObjectsPositions()
@@ -148,7 +150,7 @@ public class Game : MonoBehaviour
     }
 
     private (int, int) InputDirection(KeyCode inputKeyMovement) =>
-        Converting.GetDirection(inputKeyMovement.ToString());
+        Labyrinth.Converting.GetDirection(inputKeyMovement.ToString());
 
     private bool TryMove(char[,] Field, (int, int) NewPosition)
     {

@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace Labyrinth
+﻿namespace Labyrinth
 {
     public class CellSymbol
     {
-        public static char PlayerSymbol = '@';
-        public static char KeySymbol = 'k';
-        public static char ExitSymbol = '?';
-        public static char EmptySymbol = ' ';
-        public static char WallSymbol = '#';
+        public const char PlayerSymbol = '@';
+        public const char KeySymbol = 'k';
+        public const char ExitSymbol = '?';
+        public const char EmptySymbol = ' ';
+        public const char WallSymbol = '#';
     }
 }

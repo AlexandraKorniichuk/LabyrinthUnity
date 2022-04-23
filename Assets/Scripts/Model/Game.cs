@@ -36,7 +36,7 @@ namespace Labyrinth
                 CheckHavingKey();
 
                 (int, int) direction = InputDirection();
-                (int, int) NewPosition = Converting.GetNewPostion(PlayerPosition, direction);
+                (int, int) NewPosition = Converting.GetNewPosition(PlayerPosition, direction);
 
                 if (TryMove(GameField, NewPosition))
                     Move(NewPosition);

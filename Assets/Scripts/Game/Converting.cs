@@ -1,26 +1,9 @@
 using UnityEngine;
+using Labyrinth;
 
 public class Converting : MonoBehaviour 
 {
     [SerializeField] CellGameObjects cellGameObjects;
-    [SerializeField] CellSymbol cellSymbol;
-    public static (int, int) GetDirection(string directionString)
-    {
-        int i = 0, j = 0;
-        if (directionString == "W")
-            j = 1;
-        else if (directionString == "S")
-            j = -1;
-        else if (directionString == "D")
-            i = 1;
-        else if (directionString == "A")
-            i = -1;
-        return (i, j);
-    }
-
-    public static (int, int) GetNewPostion((int i, int j) OldPosition, (int i, int j) direction) =>
-        (OldPosition.i + direction.i, OldPosition.j + direction.j);
-
     public GameObject[,] GetGameObjectsField(char [,] CharField)
     {
         GameObject[,] GameObjectsField = new GameObject[CharField.GetLength(0), CharField.GetLength(1)];
