@@ -20,7 +20,7 @@ public class Game : MonoBehaviour
 
     private bool HaveGotKey = false;
 
-    public static bool IsWin;
+    public static bool IsWin = false;
 
     [SerializeField] VisualLabyrinth labyrinth;
     [SerializeField] GameUI gameUI;

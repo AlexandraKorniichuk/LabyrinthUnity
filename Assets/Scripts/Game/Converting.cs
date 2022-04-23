@@ -42,7 +42,7 @@ public class Converting : MonoBehaviour
                 GameObjectCell = cellGameObjects.KeyGameObject;
                 break;
             case CellSymbol.WallSymbol:
-                GameObjectCell = cellGameObjects.WallGameObject;
+                GameObjectCell = GetRandomWallObject();
                 break;
             case CellSymbol.ExitSymbol:
                 GameObjectCell = cellGameObjects.ExitGameObject;
@@ -54,6 +54,12 @@ public class Converting : MonoBehaviour
                 break;
         }
         return GameObjectCell;
+    }
+
+    private GameObject GetRandomWallObject()
+    {
+        int index = Random.Range(0, cellGameObjects.WallGameObjects.Count);
+        return cellGameObjects.WallGameObjects[index];
     }
 
     public bool GetCondition(Vector3 Direction, Vector3 NewPosition, Vector3 OldPosition)
