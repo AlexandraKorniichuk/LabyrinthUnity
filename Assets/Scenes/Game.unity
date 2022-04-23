@@ -35218,7 +35218,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8138468422316148919, guid: 4c511d7e505ec32428d1cb3d0a303555, type: 3}
       propertyPath: m_Text
-      value: What shouldI do?
+      value: What should I do?
       objectReference: {fileID: 0}
     - target: {fileID: 8138468422335555561, guid: 4c511d7e505ec32428d1cb3d0a303555, type: 3}
       propertyPath: m_Name
